@@ -1,0 +1,14 @@
+{
+  "name": "stateManager",
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "vue-demi": "^0.12.1"
+  },
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "*"
+  },
+  "devDependencies": {
+    "vue": "^3.0.0"
+  }
+}
