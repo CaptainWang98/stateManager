@@ -179,6 +179,7 @@ export class Query<
     this.state = this.initialState
     this.meta = config.meta
     this.scheduleGc()
+    console.log('Query initialized, ID: ' + this.queryKey)
   }
 
   private setOptions(
@@ -188,10 +189,10 @@ export class Query<
     this.options = { ...this.defaultOptions, ...options}
     this.meta = options?.meta
 
-    // 默认缓存事件为 5 分钟-
+    // 默认缓存事件为 5 分钟
     this.cacheTime = Math.max(
       this.cacheTime || 0,
-      this.options.cacheTime ?? 5 * 60 * 1000
+      this.options.cacheTime ?? 0.5 * 60 * 1000
     )
   }
 
@@ -231,10 +232,12 @@ export class Query<
 
   private scheduleGc(): void {
     this.clearGcTimer();
-
+    console.log('Query Cached, ID: ', this.queryKey)
+    
     if (isValidCacheTime(this.cacheTime)) {
       this.gcTimer = setTimeout(() => {
         this.optionalRemove()
+        console.log('Query Stale, ID: ' + this.queryKey)
       }, this.cacheTime)
     }
   }
@@ -246,6 +249,7 @@ export class Query<
 
   // 当没有 observer 且 当前 Query 不在 fetching 的时候可以清除 Query 缓存；
   private optionalRemove() {
+    console.log('Query Cache removed, ID: ' + this.queryKey)
     if (!this.observers.length && !this.state.isFetching) {
       this.cache.remove(this)
     }
@@ -260,6 +264,8 @@ export class Query<
       })
 
       this.cache.notify({ query: this, type: 'queryUpdate', action})
+      console.log('Query Update Type: ' + action.type + ', ID: ' + this.queryKey)
+      
     })
   }
 
@@ -360,7 +366,6 @@ export class Query<
 
     const queryFnContext: QueryFunctionContext<TQueryKey> = {
       queryKey,
-      // pageParam: undefined
       meta: this.meta
     }
 
@@ -479,6 +484,8 @@ export class Query<
   }
 
   onFocus(): void {
+    console.log('User Focus, ID: ', this.queryKey)
+    
     const observer = this.observers.find(x => x.shouldFetchOnWindowFocus())
     
     if (observer) {

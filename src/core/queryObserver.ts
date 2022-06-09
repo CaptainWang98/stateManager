@@ -390,11 +390,18 @@ export class QueryObserver<
 
   protected fetch(
     fetchOptions?: ObserverFetchOptions
-  ): Promise<QueryObserverResult<TData, TError>> {
-    return this.executeFetch(fetchOptions).then(() => {
-      this.updateResult()
-      return this.currentResult
-    })
+  ): Promise<QueryObserverResult<TData, TError>> | any {
+    if (this.currentQuery.isStaleByTime(300000)) {
+      console.log('Fetch from Cache, ID: ', + this.currentQuery.queryKey)
+      
+      return this.currentQuery.state.data
+    } else {
+      console.log('Fetch from Web')
+      return this.executeFetch(fetchOptions).then(() => {
+        this.updateResult()
+        return this.currentResult
+      })
+    }
   }
 
   private executeFetch(
@@ -409,7 +416,7 @@ export class QueryObserver<
 
     if (!fetchOptions?.throwOnError) {
       promise = promise.catch(noop)
-    }    
+    }
     return promise
   }
 

@@ -110,5 +110,5 @@ export class QueryClient {
   ): QueryObserverOptions<TQueryFnData, TError, TData, TQueryData, TQueryKey> {
     return this.defaultQueryOptions(options)
   }
-
+  
 }
